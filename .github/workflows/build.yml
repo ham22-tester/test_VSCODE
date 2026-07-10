@@ -37,4 +37,4 @@ jobs:
       - name: Build firmware
         run: |
           cd "$GITHUB_WORKSPACE"
-          west build -b nice_nano -d "$GITHUB_WORKSPACE/build" -p always -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG="$GITHUB_WORKSPACE/config"
+          west build -b nice_nano -d "$GITHUB_WORKSPACE/build" -s "$GITHUB_WORKSPACE/zmk/app" -p always -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG="$GITHUB_WORKSPACE/config"
