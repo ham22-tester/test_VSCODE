@@ -1,0 +1,34 @@
+name: Build ZMK firmware
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install west and dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install west pyelftools
+
+      - name: Initialize ZMK workspace
+        run: |
+          west init -l config
+          west update
+
+      - name: Build firmware
+        run: |
+          west build -b nice_nano -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG=$GITHUB_WORKSPACE/config
