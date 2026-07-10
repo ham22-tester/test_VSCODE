@@ -11,34 +11,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout this repository
         uses: actions/checkout@v4
+        with:
+          path: config
+
+      - name: Checkout ZMK
+        uses: actions/checkout@v4
+        with:
+          repository: zmkfirmware/zmk
+          ref: main
+          path: zmk
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install system build dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build gperf ccache dfu-util device-tree-compiler wget
+          sudo apt-get install -y cmake ninja-build gperf ccache dfu-util device-tree-compiler wget python3-dev git
+
+      - name: Install Python dependencies
+        run: |
           python -m pip install --upgrade pip
           pip install west pyelftools
 
       - name: Initialize ZMK workspace
         run: |
-          git clean -fdx
-          rm -rf build .west zmk zephyr
-          west init -l config
+          cd "$GITHUB_WORKSPACE/zmk"
+          west init -l ../config
           west update
-          test -d "$GITHUB_WORKSPACE/zmk/app" || { echo "ZMK app source not found"; exit 1; }
-          test -f "$GITHUB_WORKSPACE/zephyr/zephyr-env.sh" || { echo "Zephyr env script not found"; exit 1; }
-          python -m pip install -r "$GITHUB_WORKSPACE/zephyr/scripts/requirements.txt"
 
       - name: Build firmware
         run: |
-          cd "$GITHUB_WORKSPACE"
-          source "$GITHUB_WORKSPACE/zephyr/zephyr-env.sh"
-          west zephyr-export
-          west build -b nice_nano -d "$GITHUB_WORKSPACE/build" -s "$GITHUB_WORKSPACE/zmk/app" -p always -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG="$GITHUB_WORKSPACE/config"
+          cd "$GITHUB_WORKSPACE/zmk"
+          west build -b nice_nano -d "$GITHUB_WORKSPACE/zmk/build" -s "$GITHUB_WORKSPACE/zmk/app" -p always -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG="$GITHUB_WORKSPACE/config"
