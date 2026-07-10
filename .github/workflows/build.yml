@@ -8,55 +8,5 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout this repository
-        uses: actions/checkout@v4
-        with:
-          path: config
-
-      - name: Checkout ZMK
-        uses: actions/checkout@v4
-        with:
-          repository: zmkfirmware/zmk
-          ref: main
-          path: zmk
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake ninja-build gperf ccache dfu-util device-tree-compiler wget python3-dev git
-
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install west pyelftools
-
-      - name: Initialize ZMK workspace
-        run: |
-          cd "$GITHUB_WORKSPACE/zmk"
-          west init -l ../config
-          west update
-          if [ -f "$GITHUB_WORKSPACE/zmk/zephyr/zephyr-env.sh" ]; then
-            source "$GITHUB_WORKSPACE/zmk/zephyr/zephyr-env.sh"
-          fi
-          if [ -f "$GITHUB_WORKSPACE/zmk/scripts/requirements.txt" ]; then
-            python -m pip install -r "$GITHUB_WORKSPACE/zmk/scripts/requirements.txt"
-          else
-            echo "No Zephyr requirements file found; skipping Python requirements install"
-          fi
-
-      - name: Build firmware
-        run: |
-          cd "$GITHUB_WORKSPACE/zmk"
-          if [ -f "$GITHUB_WORKSPACE/zmk/zephyr/zephyr-env.sh" ]; then
-            source "$GITHUB_WORKSPACE/zmk/zephyr/zephyr-env.sh"
-          fi
-          west zephyr-export
-          west build -b nice_nano -d "$GITHUB_WORKSPACE/zmk/build" -s "$GITHUB_WORKSPACE/zmk/app" -p always -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG="$GITHUB_WORKSPACE/config"
+    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    secrets: inherit
