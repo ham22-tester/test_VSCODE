@@ -1,0 +1,6 @@
+west:
+  command: C:\Users\iseon\AppData\Roaming\uv\python\cpython-3.14.6-windows-x86_64-none\Scripts\west
+    build -b nice_nano_v2 -d C:\Users\iseon\OneDrive\Desktop\test_tca\build -s C:\Users\iseon\OneDrive\Desktop\zmk\app
+    -- -DSHIELD=tca9555_keyboard -DZMK_CONFIG=C:\Users\iseon\OneDrive\Desktop\test_tca\config
+  topdir: C:\Users\iseon\OneDrive\Desktop
+  version: 1.5.0

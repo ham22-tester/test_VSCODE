@@ -1,0 +1,6 @@
+if SHIELD_TCA9555_KEYBOARD
+
+config ZMK_KEYBOARD_NAME
+    default "TCA9555 Keyboard"
+
+endif
