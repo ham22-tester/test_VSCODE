@@ -46,7 +46,11 @@ jobs:
           if [ -f "$GITHUB_WORKSPACE/zmk/zephyr/zephyr-env.sh" ]; then
             source "$GITHUB_WORKSPACE/zmk/zephyr/zephyr-env.sh"
           fi
-          python -m pip install -r "$GITHUB_WORKSPACE/zmk/zephyr/scripts/requirements.txt"
+          if [ -f "$GITHUB_WORKSPACE/zmk/scripts/requirements.txt" ]; then
+            python -m pip install -r "$GITHUB_WORKSPACE/zmk/scripts/requirements.txt"
+          else
+            echo "No Zephyr requirements file found; skipping Python requirements install"
+          fi
 
       - name: Build firmware
         run: |
